@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/render', async (req, res) => {
+router.get('/render-', async (req, res) => {
   const url = req.query.url;
   if (url) {
     const browser = await puppeteer.launch();
@@ -20,7 +20,7 @@ router.get('/render', async (req, res) => {
     res.contentType("application/pdf");
     res.send(pdf);
   }
-  res.json({error: 'invalid url'});
+  res.json({error: 'no url found'});
 });
 
 module.exports = router;
