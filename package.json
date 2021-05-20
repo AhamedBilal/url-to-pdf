@@ -11,8 +11,10 @@
     "express": "~4.16.1",
     "hbs": "~4.0.4",
     "http-errors": "~1.6.3",
+    "hummus": "^1.0.110",
     "hummus-recipe": "^2.0.1",
     "morgan": "~1.9.1",
+    "muhammara": "^1.7.0",
     "node-qpdf": "^1.0.3",
     "node-qpdf2": "^1.4.0",
     "puppeteer": "^9.1.0"

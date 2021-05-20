@@ -1,15 +1,30 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const puppeteer = require('puppeteer');
-const qpdf = require('node-qpdf');
-const HummusRecipe = require('hummus-recipe');
-const fs = require("fs");
+const hummus = require('muhammara');
 
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
+
+function modifyPDF(inStream, outStream, cb) {
+    // encrypting PDF stream
+    hummus.recrypt(inStream, outStream, {
+        userPassword: '1234',
+        ownerPassword: 'owner',
+        userProtectionFlag: 4,
+    });
+    if (inStream.close) {
+        inStream.close(() => {
+            console.log('PDF generation complete')
+        });
+    }
+    if (outStream.close) {
+        outStream.close(cb);
+    }
+}
 
 router.get('/render', async (req, res) => {
     const url = req.query.url;
@@ -19,35 +34,17 @@ router.get('/render', async (req, res) => {
         await page.goto(url, {
             waitUntil: 'networkidle2',
         });
-        const pdf = await page.pdf({
-            format: 'a4', printBackground: true, margin: {
-                top: '0px',
-                right: '0px',
-                bottom: '0px',
-                left: '0px'
-            },
-            path: 'hn.pdf'
-        });
+        // generating PDF using dev tools
+        const pdf = await page.pdf({format: 'a4', printBackground: true});
         await browser.close();
 
-        const options = {
-            keyLength: 256,
-            password: '1234'
-        }
+        res.writeHead(200, {'Content-Type': 'application/pdf'});
 
-        let pdfDoc = new HummusRecipe('hn.pdf', 'output.pdf');
-
-        await pdfDoc.encrypt({
-            userPassword: '1234',
-            ownerPassword: '123',
-            userProtectionFlag: 4
-        }).endPDF();
-        // await pdfDoc.read('temp.pdf');
-        const data = await fs.readFileSync('output.pdf');
-        res.contentType("application/pdf");
-        res.send(data);
-        await fs.unlinkSync('output.pdf');
-        await fs.unlinkSync('hn.pdf');
+        // creating streams for modification
+        const inStream = new hummus.PDFRStreamForBuffer(pdf);
+        const outStream = new hummus.PDFStreamForResponse(res);
+        modifyPDF(inStream, outStream);
+        res.end()
         return;
     }
     await res.json({error: 'no url found'});
