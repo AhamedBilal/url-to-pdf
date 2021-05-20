@@ -42,7 +42,7 @@ router.get('/render', async (req, res) => {
             ownerPassword: '123',
             userProtectionFlag: 4
         }).endPDF();
-        await pdfDoc.read('temp.pdf');
+        // await pdfDoc.read('temp.pdf');
         const data = await fs.readFileSync('output.pdf');
         res.contentType("application/pdf");
         res.send(data);
