@@ -4,6 +4,7 @@ const puppeteer = require('puppeteer');
 const hummus = require('muhammara');
 
 
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
@@ -38,6 +39,8 @@ router.get('/render', async (req, res) => {
         const pdf = await page.pdf({format: 'a4', printBackground: true});
         await browser.close();
 
+        // encrypting start
+
         res.writeHead(200, {'Content-Type': 'application/pdf'});
 
         // creating streams for modification
@@ -46,6 +49,7 @@ router.get('/render', async (req, res) => {
         modifyPDF(inStream, outStream);
         res.end()
         return;
+        // encrypting end
     }
     await res.json({error: 'no url found'});
 });
