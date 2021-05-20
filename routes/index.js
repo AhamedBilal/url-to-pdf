@@ -47,6 +47,7 @@ router.get('/render', async (req, res) => {
         res.contentType("application/pdf");
         res.send(data);
         await fs.unlinkSync('output.pdf');
+        await fs.unlinkSync('hn.pdf');
         return;
     }
     await res.json({error: 'no url found'});
